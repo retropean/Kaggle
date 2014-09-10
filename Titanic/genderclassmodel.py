@@ -38,11 +38,11 @@ for i in xrange(number_of_classes):
         survival_table[0,i,j] = np.mean(women_only_stats.astype(np.float))  # Female stats
         survival_table[1,i,j] = np.mean(men_only_stats.astype(np.float))    # Male stats
 
-#Print survival_table will proportions of survivors.
-print survival_table
-
 #Convert nan to 0
 survival_table[ survival_table != survival_table ] = 0.
+
+#Print survival_table will proportions of survivors.
+print survival_table
 
 #If proportion of survivors is greater than or equal to .5, 1 for survived. If less, 0.
 survival_table[ survival_table < 0.5 ] = 0
