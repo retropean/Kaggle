@@ -3,24 +3,25 @@ import numpy as np
 
 csv_file_object = csv.reader(open('data/train.csv', 'rb')) 
 header = csv_file_object.next()
-
 data=[]
 
 for row in csv_file_object:
     data.append(row)
 data = np.array(data)
 
+#Determine number of fare brackets.
 fare_ceiling = 40
 data[ data[0::,9].astype(np.float) >= fare_ceiling, 9 ] = fare_ceiling - 1.0
-
 fare_bracket_size = 10
 number_of_price_brackets = fare_ceiling / fare_bracket_size
 
+#Determine number of classes by finding the number of unique entries in the class row.
 number_of_classes = len(np.unique(data[0::,2])) 
 
-# Initialize the survival table with all zeros
+#Initialize the survival table with all zeros
 survival_table = np.zeros((2, number_of_classes, number_of_price_brackets))
 
+#Find proportion of survivors.
 for i in xrange(number_of_classes):
     for j in xrange(number_of_price_brackets):
 
@@ -37,11 +38,17 @@ for i in xrange(number_of_classes):
         survival_table[0,i,j] = np.mean(women_only_stats.astype(np.float))  # Female stats
         survival_table[1,i,j] = np.mean(men_only_stats.astype(np.float))    # Male stats
 
+#Print survival_table will proportions of survivors.
+print survival_table
+
+#Convert nan to 0
 survival_table[ survival_table != survival_table ] = 0.
 
+#If proportion of survivors is greater than or equal to .5, 1 for survived. If less, 0.
 survival_table[ survival_table < 0.5 ] = 0
 survival_table[ survival_table >= 0.5 ] = 1
 
+#Reprint survival_table.
 print survival_table
 
 test_file = open('data/test.csv', 'rb')
