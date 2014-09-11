@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import pylab as P
+import csv as csv
+from sklearn.ensemble import RandomForestClassifier
 
 df = pd.read_csv('data/train.csv', header=0)
 #print df.info()
@@ -65,4 +67,4 @@ print df.dtypes[df.dtypes.map(lambda x: x=='object')]
 df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'Age'], axis=1) 
 
 train_data = df.values
-print train_data
+
