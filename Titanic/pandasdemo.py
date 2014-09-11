@@ -26,15 +26,13 @@ df = pd.read_csv('data/train.csv', header=0)
 #df['Age'].dropna().hist(bins=16, range=(0,80), alpha = .5)
 #P.show()
 
+#CLEANING THE DATA
 #Convert gender to 0 and 1
 df['Gender'] = df['Sex'].map( {'female': 0, 'male': 1} ).astype(int)
 #df['EmbarkedFix'] = df['Embarked'].map( {'S': 0, 'C': 1, 'Q': 2} ).astype(int)
-#print df.head()
 
-
-
+#find median ages by class.
 median_ages = np.zeros((2,3))
-#print median_ages
 
 for i in range(0, 2):
     for j in range(0, 3):
@@ -44,12 +42,27 @@ for i in range(0, 2):
 #print median_ages
 df['AgeFill'] = df['Age']
 
+#add median age by class to those who are missing age
 for i in range(0, 2):
     for j in range(0, 3):
         df.loc[ (df.Age.isnull()) & (df.Gender == i) & (df.Pclass == j+1),'AgeFill'] = median_ages[i,j]
 
+#indicator for rows originally without the age.
 df['AgeIsNull'] = pd.isnull(df.Age).astype(int)
 
-print df[ df['Age'].isnull() ][['Gender','Pclass','Age','AgeFill','AgeIsNull']].head(10)
+#print df[ df['Age'].isnull() ][['Gender','Pclass','Age','AgeFill','AgeIsNull']].head(10)
 
-print df.describe()
+#print df.describe()
+
+#FEATURE ENGINEERING
+#Create family size 
+df['FamilySize'] = df['SibSp'] + df['Parch']
+#Age*Class multiplier
+df['Age*Class'] = df['AgeFill'] * df['Pclass']
+
+print df.dtypes[df.dtypes.map(lambda x: x=='object')]
+
+df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked', 'Age'], axis=1) 
+
+train_data = df.values
+print train_data
