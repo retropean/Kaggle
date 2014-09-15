@@ -82,7 +82,7 @@ print 'Predicting...'
 output = forest.predict(test_data).astype(int)
 
 
-predictions_file = open("data/myfirstforest.csv", "wb")
+predictions_file = open("data/secondforest.csv", "wb")
 open_file_object = csv.writer(predictions_file)
 open_file_object.writerow(["PassengerId","Survived"])
 open_file_object.writerows(zip(ids, output))
