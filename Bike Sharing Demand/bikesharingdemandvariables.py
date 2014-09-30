@@ -16,14 +16,15 @@ df['dow'] = df['datetime'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:
 df['month'] = df['datetime'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S').month)
 df['date'] = df['datetime'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S').strftime('%m/%d/%Y'))
 
-#create indicator for rush hour
-df['rushhour'] = df['hour'].map({0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: 1, 9: 1, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 1, 16: 1, 17: 1, 18: 1, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0})
+#create indicator for rush hour, 6 to 9am and 3 to 6pm
+df['rushhour'] = np.where(((df['hour']>=6) & (df['hour'] <=9)) | ((df['hour']>=15) & (df['hour'] <=18)),1,0)
 
 #adjust date on sundata, drop unneccesary rows
 sundata['date'] = sundata['date'].apply(lambda x: datetime.strptime(x, '%m/%d/%Y').strftime('%m/%d/%Y'))
 
 sundata['sunrise'] = sundata['sunrise'].apply(lambda x: datetime.strptime(str(x), "%H%M").time())
 sundata['sunset'] = sundata['sunset'].apply(lambda x: datetime.strptime(str(x), "%H%M").time())
+#sundata['sunset'] = (sundata['sunset'],sundata['date']).apply(lambda x,y: datetime.combine(x, y))
 sundata = sundata.drop(['month', 'day', 'year'], axis=1)
 
 #merge the sundata into df
