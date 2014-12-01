@@ -96,7 +96,7 @@ train_df.to_csv('data/train_data.csv')
 test_df.to_csv('data/test_data.csv')
 
 print 'Training...'
-forest = RandomForestClassifier(n_estimators=10)
+forest = RandomForestClassifier(n_estimators=14)
 #sheet[rows,columns],on which variable[rows,columns]
 forest = forest.fit(train_data[0::,1::], train_data[0::,0])
 
