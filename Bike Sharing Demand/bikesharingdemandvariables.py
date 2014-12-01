@@ -96,14 +96,14 @@ train_df.to_csv('data/train_data.csv')
 test_df.to_csv('data/test_data.csv')
 
 print 'Training...'
-forest = RandomForestClassifier(n_estimators=100)
+forest = RandomForestClassifier(n_estimators=10)
 #sheet[rows,columns],on which variable[rows,columns]
-forest = forest.fit(train_data[0::,0::], train_data[0::,0])
+forest = forest.fit(train_data[0::,1::], train_data[0::,0])
 
 print 'Predicting...'
 output = forest.predict(test_data).astype(int)
 
-predictions_file = open("data/myfirstforest.csv", "wb")
+predictions_file = open("data/submission.csv", "wb")
 open_file_object = csv.writer(predictions_file)
 open_file_object.writerow(["datetime","count"])
 open_file_object.writerows(zip(dateid, output))
