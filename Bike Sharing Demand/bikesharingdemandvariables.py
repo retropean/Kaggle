@@ -55,23 +55,23 @@ print df.head()
 print df.info()
 
 #drop unnecessary variables from df
-df = df.drop(['sunrise', 'sunset', 'dateandtime', 'date', 'time', 'datetime'], axis=1)
+df = df.drop(['sunrise', 'sunset', 'date', 'datetime'], axis=1)
 
 #create csv with new variables
 df.to_csv('data/output.csv')
 
 df_data = df.values
 
-print 'Training...'
-forest = RandomForestClassifier(n_estimators=100)
-forest = forest.fit( df_data[0::,1::], df_data[0::,0] )
+#print 'Training...'
+#forest = RandomForestClassifier(n_estimators=100)
+#forest = forest.fit( df_data[0::,1::], df_data[0::,0] )
 
-print 'Predicting...'
-output = forest.predict(df_data).astype(int)
+#print 'Predicting...'
+#output = forest.predict(df_data).astype(int)
 
-predictions_file = open("data/myfirstforest.csv", "wb")
-open_file_object = csv.writer(predictions_file)
-open_file_object.writerow(["Date","Survived"])
-open_file_object.writerows(zip(ids, output))
-predictions_file.close()
-print 'Done.'
+#predictions_file = open("data/myfirstforest.csv", "wb")
+#open_file_object = csv.writer(predictions_file)
+#open_file_object.writerow(["Date","Survived"])
+#open_file_object.writerows(zip(ids, output))
+#predictions_file.close()
+#print 'Done.'
