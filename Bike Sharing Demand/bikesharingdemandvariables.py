@@ -20,8 +20,6 @@ sundata['sunrise'] = sundata['sunrise'].apply(lambda x: datetime.strptime(str(x)
 sundata['sunset'] = sundata['sunset'].apply(lambda x: datetime.strptime(str(x), "%H%M").time())
 sundata['sunrise'] = sundata.apply(sunrisecombine, axis=1)
 sundata['sunset'] = sundata.apply(sunsetcombine, axis=1)
-print sundata.head()
-print sundata.info()
 #drop unnecessary variables from sundata
 sundata = sundata.drop(['month', 'day', 'year'], axis=1)
 sundata['date'] = sundata['date'].apply(lambda x: datetime.strftime(x, '%m/%d/%Y'))
@@ -50,10 +48,11 @@ train_df['sunindicator'] = np.where((((train_df['sunrise']) - (timedelta(minutes
 print 'train_df info'
 print train_df.head()
 print train_df.info()
+print train_df.describe()
 
 #DROP UNNECESSARY VARIABLES FROM TRAIN_DF
 dateid = train_df['datetime'].values
-train_df = train_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp','dow','month','count','rushhour'], axis=1)
+train_df = train_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp','dow','month','count','rushhour','windspeed','humidity'], axis=1)
 
 '''
 regtrain_df = train_df.copy(deep=True)
@@ -88,15 +87,16 @@ test_df['sunindicator'] = np.where((((test_df['sunrise']) - (timedelta(minutes=3
 print 'test_df info'
 print test_df.head()
 print test_df.info()
+print test_df.describe()
 
 #DROP UNNECESSARY VARIABLES FROM TEST_DF
 dateid = test_df['datetime'].values
-test_df = test_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp','dow','month','rushhour'], axis=1)
+test_df = test_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp','dow','month','rushhour','windspeed','humidity'], axis=1)
 #maybe convert time to an int
 
 #create csv with new variables
 train_df.to_csv('data/output.csv')
-train_df = train_df[['registered','casual','season','holiday','workingday','weather','atemp','humidity','windspeed','hour','year','sunindicator']]
+train_df = train_df[['registered','casual','season','holiday','workingday','weather','atemp','hour','year','sunindicator']]
 train_data = train_df.values
 test_data = test_df.values
 
@@ -104,8 +104,8 @@ train_df.to_csv('data/train_data.csv')
 test_df.to_csv('data/test_data.csv')
 
 print 'Training...'
-registeredforest = RandomForestClassifier(n_estimators=10, max_features=None)
-casualforest = RandomForestClassifier(n_estimators=10, max_features=None)
+registeredforest = RandomForestClassifier(n_estimators=11, max_features=None)
+casualforest = RandomForestClassifier(n_estimators=11, max_features=None)
 #sheet[rows,columns],on which variable[rows,columns]
 registeredforest = registeredforest.fit(train_data[0::,2::], train_data[0::,0])
 casualforest = casualforest.fit(train_data[0::,2::], train_data[0::,1])
