@@ -53,8 +53,16 @@ print train_df.info()
 
 #DROP UNNECESSARY VARIABLES FROM TRAIN_DF
 dateid = train_df['datetime'].values
-train_df = train_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','registered','casual','temp'], axis=1)
-#maybe convert time to an int
+train_df = train_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp','dow','month','count','rushhour'], axis=1)
+
+'''
+regtrain_df = train_df.copy(deep=True)
+regtrain_df = regtrain_df.drop(['casual'])
+castrain_df = train_df.copy(deep=True)
+print 'castrain infoooooo'
+print castrain_df.info()
+castrain_df = castrain_df.drop('registered')
+'''
 
 ################
 #CREATE TEST_DF#
@@ -83,12 +91,12 @@ print test_df.info()
 
 #DROP UNNECESSARY VARIABLES FROM TEST_DF
 dateid = test_df['datetime'].values
-test_df = test_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp'], axis=1)
+test_df = test_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp','dow','month','rushhour'], axis=1)
 #maybe convert time to an int
 
 #create csv with new variables
 train_df.to_csv('data/output.csv')
-train_df = train_df[['count','season','holiday','workingday','weather','atemp','humidity','windspeed','hour','year','dow','month','rushhour','sunindicator']]
+train_df = train_df[['registered','casual','season','holiday','workingday','weather','atemp','humidity','windspeed','hour','year','sunindicator']]
 train_data = train_df.values
 test_data = test_df.values
 
@@ -96,16 +104,17 @@ train_df.to_csv('data/train_data.csv')
 test_df.to_csv('data/test_data.csv')
 
 print 'Training...'
-forest = RandomForestClassifier(n_estimators=10)
+registeredforest = RandomForestClassifier(n_estimators=10, max_features=None)
+casualforest = RandomForestClassifier(n_estimators=10, max_features=None)
 #sheet[rows,columns],on which variable[rows,columns]
-forest = forest.fit(train_data[0::,1::], train_data[0::,0])
-
+registeredforest = registeredforest.fit(train_data[0::,2::], train_data[0::,0])
+casualforest = casualforest.fit(train_data[0::,2::], train_data[0::,1])
 print 'Predicting...'
-output = forest.predict(test_data).astype(int)
-
-predictions_file = open("data/submission.csv", "wb")
+totaloutput = (casualforest.predict(test_data).astype(int))+(registeredforest.predict(test_data).astype(int))
+print 'Writing...'
+predictions_file = open("data/mysubmission.csv", "wb")
 open_file_object = csv.writer(predictions_file)
 open_file_object.writerow(["datetime","count"])
-open_file_object.writerows(zip(dateid, output))
+open_file_object.writerows(zip(dateid, totaloutput))
 predictions_file.close()
 print 'Done.'
