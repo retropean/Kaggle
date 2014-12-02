@@ -53,7 +53,7 @@ print train_df.info()
 
 #DROP UNNECESSARY VARIABLES FROM TRAIN_DF
 dateid = train_df['datetime'].values
-train_df = train_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','count','casual'], axis=1)
+train_df = train_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','registered','casual','temp'], axis=1)
 #maybe convert time to an int
 
 ################
@@ -83,12 +83,12 @@ print test_df.info()
 
 #DROP UNNECESSARY VARIABLES FROM TEST_DF
 dateid = test_df['datetime'].values
-test_df = test_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time'], axis=1)
+test_df = test_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp'], axis=1)
 #maybe convert time to an int
 
 #create csv with new variables
 train_df.to_csv('data/output.csv')
-train_df = train_df[['registered','season','holiday','workingday','weather','temp','atemp','humidity','windspeed','hour','year','dow','month','rushhour','sunindicator']]
+train_df = train_df[['count','season','holiday','workingday','weather','atemp','humidity','windspeed','hour','year','dow','month','rushhour','sunindicator']]
 train_data = train_df.values
 test_data = test_df.values
 
@@ -96,7 +96,7 @@ train_df.to_csv('data/train_data.csv')
 test_df.to_csv('data/test_data.csv')
 
 print 'Training...'
-forest = RandomForestClassifier(n_estimators=14)
+forest = RandomForestClassifier(n_estimators=10)
 #sheet[rows,columns],on which variable[rows,columns]
 forest = forest.fit(train_data[0::,1::], train_data[0::,0])
 
