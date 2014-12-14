@@ -104,8 +104,8 @@ train_df.to_csv('data/train_data.csv')
 test_df.to_csv('data/test_data.csv')
 
 print 'Training...'
-registeredforest = RandomForestClassifier(n_estimators=11, max_features=None)
-casualforest = RandomForestClassifier(n_estimators=11, max_features=None)
+registeredforest = RandomForestClassifier(n_estimators=100, max_features=None)
+casualforest = RandomForestClassifier(n_estimators=100, max_features=None)
 #sheet[rows,columns],on which variable[rows,columns]
 registeredforest = registeredforest.fit(train_data[0::,2::], train_data[0::,0])
 casualforest = casualforest.fit(train_data[0::,2::], train_data[0::,1])
