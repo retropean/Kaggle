@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import pandas as pd
 import pylab as P
@@ -6,6 +7,9 @@ from datetime import datetime
 from datetime import timedelta
 from sklearn.ensemble import RandomForestClassifier
 
+
+trees = 250
+data_time = int(time.time())
 #MANIPULATING SUNTIMES.CSV
 def sunrisecombine(x):
 	return (datetime.combine(x['date'], x['sunrise']))
@@ -95,24 +99,24 @@ test_df = test_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','
 #maybe convert time to an int
 
 #create csv with new variables
-train_df.to_csv('data/output.csv')
+train_df.to_csv('data/output-%s-%s.csv' % (data_time, trees))
 train_df = train_df[['registered','casual','season','holiday','workingday','weather','atemp','hour','year','sunindicator']]
 train_data = train_df.values
 test_data = test_df.values
 
-train_df.to_csv('data/train_data.csv')
-test_df.to_csv('data/test_data.csv')
+train_df.to_csv('data/train_data-%s-%s.csv' % (data_time, trees))
+test_df.to_csv('data/test_data-%s-%s.csv' % (data_time, trees))
 
 print 'Training...'
-registeredforest = RandomForestClassifier(n_estimators=100, max_features=None)
-casualforest = RandomForestClassifier(n_estimators=100, max_features=None)
+registeredforest = RandomForestClassifier(n_estimators=trees, max_features=None)
+casualforest = RandomForestClassifier(n_estimators=trees, max_features=None)
 #sheet[rows,columns],on which variable[rows,columns]
 registeredforest = registeredforest.fit(train_data[0::,2::], train_data[0::,0])
 casualforest = casualforest.fit(train_data[0::,2::], train_data[0::,1])
 print 'Predicting...'
 totaloutput = (casualforest.predict(test_data).astype(int))+(registeredforest.predict(test_data).astype(int))
 print 'Writing...'
-predictions_file = open("data/mysubmission.csv", "wb")
+predictions_file = open("data/mysubmission-%s-%s.csv" % (data_time, trees), "wb")
 open_file_object = csv.writer(predictions_file)
 open_file_object.writerow(["datetime","count"])
 open_file_object.writerows(zip(dateid, totaloutput))
