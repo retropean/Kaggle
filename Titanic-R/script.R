@@ -75,3 +75,11 @@ fancyRpartPlot(fit)
 Prediction <- predict(fit, test, type = "class")
 submit <- data.frame(PassengerId = test$PassengerId, Survived = Prediction)
 write.csv(submit, file = "myfirstdtree.csv", row.names = FALSE)
+
+
+#combine both data sets  for feature engineering
+#re-read csvs (top code)
+test$Survived <- NA
+combi <- rbind(train, test)
+combi$Name <- as.character(combi$Name)
+combi$Name[1]
