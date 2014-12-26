@@ -1,6 +1,15 @@
-setwd("~/GitHub/Kaggle/Titanic-R")
-train <- read.csv("~/GitHub/Kaggle/Titanic-R/train.csv")
-test <- read.csv("~/GitHub/Kaggle/Titanic-R/test.csv")
+setwd("C:/Users/Lenovo/Desktop/Kaggle/Titanic-R")
+train <- read.csv("C:/Users/Lenovo/Desktop/Kaggle/Titanic-R/train.csv")
+test <- read.csv("C:/Users/Lenovo/Desktop/Kaggle/Titanic-R/test.csv")
+
+install.packages('rattle')
+install.packages('rpart.plot')
+install.packages('RColorBrewer')
+
+library(rpart)
+library(rattle)
+library(rpart.plot)
+library(RColorBrewer)
 
 str(train)
 table(train$Survived)
@@ -46,18 +55,23 @@ test$Survived[test$Sex == 'female' & test$Pclass == 3 & test$Fare >= 20] <- 0
 submit <- data.frame(PassengerId = test$PassengerId, Survived = test$Survived)
 write.csv(submit, file = "theyallperish.csv", row.names = FALSE)
 
-library(rpart)
-
+#create basic tree
 fit <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked, data=train, method="class")
 
 plot(fit)
 text(fit)
+fancyRpartPlot(fit)
 
-install.packages('rattle')
-install.packages('rpart.plot')
-install.packages('RColorBrewer')
-library(rattle)
-library(rpart.plot)
-library(RColorBrewer)
+#snip parts of tree
+#fit2 <- snip.rpart(fit, toss = 5)
+#fancyRpartPlot(fit2)
+
+fit <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked, data=train,
+             method="class", control=rpart.control(minsplit=2, cp=0))
 
 fancyRpartPlot(fit)
+
+
+Prediction <- predict(fit, test, type = "class")
+submit <- data.frame(PassengerId = test$PassengerId, Survived = Prediction)
+write.csv(submit, file = "myfirstdtree.csv", row.names = FALSE)
