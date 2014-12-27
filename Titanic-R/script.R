@@ -5,11 +5,14 @@ test <- read.csv("C:/Users/Lenovo/Desktop/Kaggle/Titanic-R/test.csv")
 install.packages('rattle')
 install.packages('rpart.plot')
 install.packages('RColorBrewer')
-
+install.packages('randomForest')
+install.packages('party')
+library(party)
 library(rpart)
 library(rattle)
 library(rpart.plot)
 library(RColorBrewer)
+library(randomForest)
 
 str(train)
 table(train$Survived)
@@ -77,6 +80,7 @@ submit <- data.frame(PassengerId = test$PassengerId, Survived = Prediction)
 write.csv(submit, file = "myfirstdtree.csv", row.names = FALSE)
 
 
+
 #combine both data sets  for feature engineering
 #re-read csvs (top code)
 test$Survived <- NA
@@ -107,3 +111,46 @@ test <- combi[892:1309,]
 fit <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID,
              data=train, method="class")
 fancyRpartPlot(fit)
+
+Agefit <- rpart(Age ~ Pclass + Sex + SibSp + Parch + Fare + Embarked + Title + FamilySize,
+                data=combi[!is.na(combi$Age),], method="anova")
+combi$Age[is.na(combi$Age)] <- predict(Agefit, combi[is.na(combi$Age),])
+summary(combi$Age)
+
+summary(combi)
+
+#find which have blank Embarked
+which(combi$Embarked == '')
+#replace with S, most common
+combi$Embarked[c(62,830)] = "S"
+combi$Embarked <- factor(combi$Embarked)
+
+#find which fare is NA
+which(is.na(combi$Fare))
+#replace with median fare.
+combi$Fare[1044] <- median(combi$Fare, na.rm=TRUE)
+
+combi$FamilyID2 <- combi$FamilyID
+combi$FamilyID2 <- as.character(combi$FamilyID2)
+combi$FamilyID2[combi$FamilySize <= 3] <- 'Small'
+combi$FamilyID2 <- factor(combi$FamilyID2)
+
+train <- combi[1:891,]
+test <- combi[892:1309,]
+#set seed constant for reproducability
+set.seed(415)
+fit <- randomForest(as.factor(Survived) ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize +
+                      FamilyID2, data=train, importance=TRUE, ntree=2000)
+#Gini, high->variable important
+#MeanDecrease->How model accuracy decreases w/o variable
+varImpPlot(fit)
+Prediction <- predict(fit, test)
+submit <- data.frame(PassengerId = test$PassengerId, Survived = Prediction)
+write.csv(submit, file = "firstforest.csv", row.names = FALSE)
+
+set.seed(415)
+fit <- cforest(as.factor(Survived) ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID,
+               data = train, controls=cforest_unbiased(ntree=2000, mtry=3))
+Prediction <- predict(fit, test, OOB=TRUE, type = "response")
+submit <- data.frame(PassengerId = test$PassengerId, Survived = Prediction)
+write.csv(submit, file = "firstforest.csv", row.names = FALSE)
