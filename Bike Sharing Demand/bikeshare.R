@@ -11,3 +11,6 @@ library(rpart.plot)
 library(RColorBrewer)
 library(randomForest)
 
+fit <- rpart(registered ~ season + holiday + workingday + weather + atemp + hour + year + sunindicator, data=train, method="anova")
+plot(fit)
+text(fit)
