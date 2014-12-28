@@ -62,7 +62,7 @@ train_df = train_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime'
 regtrain_df = train_df.copy(deep=True)
 regtrain_df = regtrain_df.drop(['casual'])
 castrain_df = train_df.copy(deep=True)
-print 'castrain infoooooo'
+print 'castrain info'
 print castrain_df.info()
 castrain_df = castrain_df.drop('registered')
 '''
@@ -107,6 +107,8 @@ test_data = test_df.values
 train_df.to_csv('data/train_data-%s-%s.csv' % (data_time, trees))
 test_df.to_csv('data/test_data-%s-%s.csv' % (data_time, trees))
 
+#The following works but I am now predicting using R
+'''
 print 'Training...'
 registeredforest = RandomForestClassifier(n_estimators=trees, max_features=None)
 casualforest = RandomForestClassifier(n_estimators=trees, max_features=None)
@@ -122,3 +124,4 @@ open_file_object.writerow(["datetime","count"])
 open_file_object.writerows(zip(dateid, totaloutput))
 predictions_file.close()
 print 'Done.'
+'''
