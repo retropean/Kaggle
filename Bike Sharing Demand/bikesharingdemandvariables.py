@@ -56,7 +56,7 @@ print train_df.describe()
 
 #DROP UNNECESSARY VARIABLES FROM TRAIN_DF
 dateid = train_df['datetime'].values
-train_df = train_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp','dow','month','count','rushhour','windspeed','humidity'], axis=1)
+train_df = train_df.drop(['sunrise', 'sunset', 'date','dateandtime','time','temp','dow','month','count','rushhour','windspeed','humidity'], axis=1)
 
 '''
 regtrain_df = train_df.copy(deep=True)
@@ -95,12 +95,12 @@ print test_df.describe()
 
 #DROP UNNECESSARY VARIABLES FROM TEST_DF
 dateid = test_df['datetime'].values
-test_df = test_df.drop(['sunrise', 'sunset', 'date', 'datetime', 'dateandtime','time','temp','dow','month','rushhour','windspeed','humidity'], axis=1)
+test_df = test_df.drop(['sunrise', 'sunset', 'date', 'dateandtime','time','temp','dow','month','rushhour','windspeed','humidity'], axis=1)
 #maybe convert time to an int
 
 #create csv with new variables
 train_df.to_csv('data/output-%s-%s.csv' % (data_time, trees))
-train_df = train_df[['registered','casual','season','holiday','workingday','weather','atemp','hour','year','sunindicator']]
+train_df = train_df[['datetime','registered','casual','season','holiday','workingday','weather','atemp','hour','year','sunindicator']]
 train_data = train_df.values
 test_data = test_df.values
 
